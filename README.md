@@ -1,20 +1,27 @@
-🌟 Star Hotel
-Site moderno para o hotel Star Hotel, em Limoeiro-PE, feito com React e Tailwind CSS.
+# 🌟 Star Hotel
 
-🚀 Funcionalidades
-Design responsivo
+Site moderno para o **Star Hotel**, localizado em **Limoeiro-PE**, desenvolvido com **React** e **Tailwind CSS**.
 
-Sistema de reservas (Back4App)
+---
 
-Clima em tempo real (OpenWeather API)
+## 🚀 Funcionalidades
 
-Painel administrativo
+- Design responsivo e moderno  
+- Sistema de reservas com integração ao **Back4App**  
+- Widget de clima em tempo real (OpenWeather API)  
+- Painel administrativo para gerenciamento de reservas  
+- Páginas informativas sobre o hotel e seus serviços  
 
-Páginas informativas sobre o hotel
+---
 
-🛠️ Tecnologias
-React, Vite, React Router
+## 🛠️ Tecnologias Utilizadas
 
-Tailwind CSS, ESLint, Prettier
+- [React](https://reactjs.org/)  
+- [Tailwind CSS](https://tailwindcss.com/)  
+- [Vite](https://vitejs.dev/)  
+- [Back4App](https://www.back4app.com/)  
+- [OpenWeather API](https://openweathermap.org/api)  
+- React Router  
+- ESLint & Prettier  
 
-Back4App, OpenWeather API
+---
