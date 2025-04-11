@@ -22,5 +22,4 @@ Site moderno para o **Star Hotel**, localizado em **Limoeiro-PE**, desenvolvido 
 - [Back4App](https://www.back4app.com/)  
 - [OpenWeather API](https://openweathermap.org/api)  
 - React Router  
-
 ---
