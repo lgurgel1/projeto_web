@@ -17,30 +17,35 @@ import LoginPage from './pages/LoginPage'
 import Parse from './config/back4app'
 import './index.css'
 
+// Componente simples para rota protegida de Admin
 function AdminRoute({ children }) {
   const currentUser = Parse.User.current();
+  // Verifica se o usuário logado é admin_hotel em vez de checar a propriedade isAdmin
   const isAdmin = currentUser && currentUser.get('username') === 'admin_hotel';
   return isAdmin ? children : <Navigate to="/login" replace />; 
 }
 
+// Componente simples para rota protegida de usuário logado
 function UserRoute({ children }) {
   const currentUser = Parse.User.current();
   return currentUser ? children : <Navigate to="/login" replace />; 
 }
 
 function App() {
+  // Estado para forçar re-renderização após login/logout
   const [authKey, setAuthKey] = useState(0); 
   const [currentUser, setCurrentUser] = useState(Parse.User.current());
 
   useEffect(() => {
     const handleUserChange = () => {
-      setAuthKey(prevKey => prevKey + 1);
+      setAuthKey(prevKey => prevKey + 1); // Muda a key para forçar re-render
       setCurrentUser(Parse.User.current());
     };
     window.addEventListener('userChange', handleUserChange);
     return () => window.removeEventListener('userChange', handleUserChange);
   }, []);
 
+  // Redireciona para login se não estiver logado
   useEffect(() => {
     if (!currentUser && window.location.pathname !== '/login' && 
         window.location.pathname !== '/cadastro') {
