@@ -1,16 +1,16 @@
 const handleDelete = (reservationId) => {
   if (window.confirm('Tem certeza que deseja excluir esta reserva?')) {
-    // Lógica de exclusão
+    // exclusão
     alert('Reserva excluída com sucesso!');
   }
 };
 
 const handleEdit = (reservationId) => {
-  // Lógica de edição
+  // edição
   alert('Reserva editada com sucesso!');
 };
 
 const handleSave = () => {
-  // Lógica de salvamento
+  // salvamento
   alert('Reserva salva com sucesso!');
 }; 
