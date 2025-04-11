@@ -80,7 +80,7 @@ const GaleriaPage = () => {
     }
   ];
 
-  // Estado para controlar o carrossel de imagens
+  // E carrossel de imagens
   const [currentImageIndex, setCurrentImageIndex] = useState({
     triplo: 0,
     duplo: 0,
@@ -88,7 +88,7 @@ const GaleriaPage = () => {
     flat: 0
   });
 
-  // Estado para controlar se o carrossel está pausado
+  //  se o carrossel está pausado
   const [isPaused, setIsPaused] = useState({
     triplo: false,
     duplo: false,
@@ -96,10 +96,10 @@ const GaleriaPage = () => {
     flat: false
   });
 
-  // Referência ao intervalo para poder pausá-lo e continuá-lo
+  //  intervalo para poder pausá-lo e continuá-lo
   const intervalRef = useRef(null);
 
-  // Efeito para alternar automaticamente as imagens a cada 5 segundos
+  //  alternar automaticamente as imagens a cada 5 segundos
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       roomTypes.forEach(room => {
@@ -111,17 +111,17 @@ const GaleriaPage = () => {
           }));
         }
       });
-    }, 5000); // 5000 milissegundos = 5 segundos
+    }, 5000);
 
     return () => {
-      // Limpa o intervalo quando o componente é desmontado
+      
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isPaused]); // Adiciona isPaused como dependência para que o efeito seja recriado quando ele mudar
+  }, [isPaused]); 
 
-  // Funções para navegar pelas imagens
+  
   const nextImage = (roomTypeId) => {
     setCurrentImageIndex(prev => ({
       ...prev,
@@ -136,7 +136,7 @@ const GaleriaPage = () => {
     }));
   };
 
-  // Funções para pausar e continuar o carrossel
+  
   const pauseCarousel = (roomTypeId) => {
     setIsPaused(prev => ({
       ...prev,
