@@ -1,4 +1,5 @@
-import Parse from 'parse/dist/parse.min.js'
+import Parse from 'parse';
+
 
 // Configuração do Parse
 const PARSE_APP_ID = import.meta.env.VITE_BACK4APP_APPLICATION_ID
