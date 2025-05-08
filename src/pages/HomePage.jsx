@@ -5,19 +5,19 @@ function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative h-screen">
+      <section className="relative h-[74vh]">
         <div className="absolute inset-0">
           <img
             src="/images/hotel-banner.jpg"
             alt="Star Hotel"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+          <div className="absolute inset-0 bg-black bg-opacity-60"></div>
         </div>
         <div className="relative container mx-auto px-4 h-full flex items-center">
           <div className="text-white max-w-2xl">
             <h1 className="text-5xl md:text-6xl font-playfair font-bold mb-6">
-              Bem-vindo ao Star Hotel
+              Bem-vindo ao <br/> Star Hotel
             </h1>
             <p className="text-xl mb-8">
               Descubra a elegância e o conforto em um ambiente acolhedor no coração de Limoeiro-PE.

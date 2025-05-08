@@ -21,7 +21,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        'playfair': ['"Playfair Display"', 'serif'],
+        'playfair': ['Roboto', 'sans-serif'],
         'poppins': ['Poppins', 'sans-serif'],
       },
     },
