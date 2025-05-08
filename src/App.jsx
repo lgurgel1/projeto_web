@@ -47,8 +47,8 @@ function App() {
 
   // Redireciona para login se não estiver logado
   useEffect(() => {
-    if (!currentUser && window.location.pathname !== '/login' && 
-        window.location.pathname !== '/cadastro') {
+    const publicRoutes = ['/', '/login', '/cadastro', '/sobre', '/galeria', '/servicos', '/contato'];
+    if (!currentUser && !publicRoutes.includes(window.location.pathname)) {
       window.location.href = '/login';
     }
   }, [currentUser]);
@@ -60,18 +60,20 @@ function App() {
         <main className="flex-grow">
           <Routes>
             {/* Redireciona a página principal para login se não estiver logado */}
-            <Route path="/" element={currentUser ? <HomePage /> : <Navigate to="/login" replace />} />
+            {/*<Route path="/" element={currentUser ? <HomePage /> : <Navigate to="/login" replace />} /> */}
             
+            <Route path="/" element = {<HomePage />} />
+            <Route path="/sobre" element={<SobrePage />} />
+            <Route path="/galeria" element={<GaleriaPage />} />
+            <Route path="/servicos" element={<Services />} />
+            <Route path="/contato" element={<Contact />} />
+
             {/* Tela de login sempre acessível */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/cadastro" element={<LoginPage showRegister={true} />} />
             
             {/* Rotas protegidas por login */}
             <Route path="/reservas" element={<UserRoute><ReservasPage /></UserRoute>} />
-            <Route path="/sobre" element={<UserRoute><SobrePage /></UserRoute>} />
-            <Route path="/galeria" element={<UserRoute><GaleriaPage /></UserRoute>} />
-            <Route path="/servicos" element={<UserRoute><Services /></UserRoute>} />
-            <Route path="/contato" element={<UserRoute><Contact /></UserRoute>} />
             <Route path="/confirmacao" element={<UserRoute><ConfirmacaoPage /></UserRoute>} />
             <Route path="/lista-reservas" element={<UserRoute><ListaReservasPage /></UserRoute>} />
             
