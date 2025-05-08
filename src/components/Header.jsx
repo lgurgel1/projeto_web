@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { FaStar, FaBars, FaTimes } from 'react-icons/fa'
 import Parse from '../config/back4app'
+
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(Parse.User.current())
   const navigate = useNavigate()
-
+  const location = useLocation()
   useEffect(() => {
     const handleUserChange = () => {
       setCurrentUser(Parse.User.current())
@@ -35,9 +36,9 @@ function Header() {
       <nav className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-3">
-            <img 
-              src="/images/logo.png" 
-              alt="Star Hotel Logo" 
+            <img
+              src="/images/logo.png"
+              alt="Star Hotel Logo"
               className="h-8 w-auto"
             />
             <div className="text-2xl font-playfair font-bold text-wine-900">
@@ -47,19 +48,38 @@ function Header() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-wine-900">
-              Início
+            <Link
+              to="/"
+              className={`text-gray-700 hover:text-wine-900 ${location.pathname === '/' ? 'text-wine-900 font-bold' : ''}`}
+            >
+              Inicio
             </Link>
-            <Link to="/sobre" className="text-gray-700 hover:text-wine-900">
+
+            <Link
+              to="/sobre"
+              className={`text-gray-700 hover:text-wine-900 ${location.pathname === '/sobre' ? 'text-wine-900 font-bold' : ''}`}
+            >
               Sobre
             </Link>
-            <Link to="/galeria" className="text-gray-700 hover:text-wine-900">
+
+            <Link
+              to="/galeria"
+              className={`text-gray-700 hover:text-wine-900 ${location.pathname === '/galeria' ? 'text-wine-900 font-bold' : ''}`}
+            >
               Galeria
             </Link>
-            <Link to="/servicos" className="text-gray-700 hover:text-wine-900">
+
+            <Link
+              to="/servicos"
+              className={`text-gray-700 hover:text-wine-900 ${location.pathname === '/servicos' ? 'text-wine-900 font-bold' : ''}`}
+            >
               Serviços
             </Link>
-            <Link to="/contato" className="text-gray-700 hover:text-wine-900">
+
+            <Link
+              to="/contato"
+              className={`text-gray-700 hover:text-wine-900 ${location.pathname === '/contato' ? 'text-wine-900 font-bold' : ''}`}
+            >
               Contato
             </Link>
 
@@ -73,11 +93,16 @@ function Header() {
                 Gerenciar Reservas
               </Link>
             )}
-            
+
             {!currentUser ? (
-              <Link to="/login" className="text-gray-700 hover:text-wine-900">
+
+              <Link
+                to="/login"
+                className={`text-gray-700 hover:text-wine-900 ${location.pathname === '/login' ? 'text-wine-900 font-bold' : ''}`}
+              >
                 Login
               </Link>
+
             ) : (
               <button onClick={handleLogout} className="text-gray-700 hover:text-wine-900">
                 Logout
@@ -136,7 +161,7 @@ function Header() {
             >
               Contato
             </Link>
-            
+
             {currentUser && !isAdmin && (
               <Link
                 to="/lista-reservas"
@@ -155,7 +180,7 @@ function Header() {
                 Gerenciar Reservas
               </Link>
             )}
-            
+
             {!currentUser ? (
               <Link
                 to="/login"
