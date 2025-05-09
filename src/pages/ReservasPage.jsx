@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom' 
 import Parse from '../config/back4app'
 
@@ -15,6 +15,20 @@ function ReservasPage() {
     numeroPessoas: 1,
     observacoes: ''
   })
+
+  useEffect(() => {
+    const usuarioSalvo = Parse.User.current()
+    if (usuarioSalvo) {
+      const nome = usuarioSalvo.get('username') || ''
+      const email = usuarioSalvo.get('email') || ''
+  
+      setFormData((prev) => ({
+        ...prev,
+        nome,
+        email
+      }))
+    }
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -83,37 +97,7 @@ function ReservasPage() {
         noValidate
         className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-gray-700 mb-2" htmlFor="nome">
-              Nome Completo
-            </label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-wine-900"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-gray-700 mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-wine-900"
-            />
-          </div>
-        </div>
+
 
         <div className="mt-6">
           <label className="block text-gray-700 mb-2" htmlFor="telefone">
