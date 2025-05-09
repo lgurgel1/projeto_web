@@ -84,7 +84,10 @@ function Header() {
             </Link>
 
             {currentUser && !isAdmin && (
-              <Link to="/lista-reservas" className="text-gray-700 hover:text-wine-900">
+              <Link 
+              to="/lista-reservas"
+              className={`text-gray-700 hover:text-wine-900 ${location.pathname === '/lista-reservas' ? 'text-wine-900 font-bold' : ''}`}
+              >
                 Minhas Reservas
               </Link>
             )}
