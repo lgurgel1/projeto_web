@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
-import { auth } from '../config/firebase-config'; // ajuste conforme seu projeto
+import Parse from '../config/back4app';
+import { auth } from '../config/firebase-config';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 
 function LoginPage({ showRegister = false }) {
   const navigate = useNavigate();
@@ -14,22 +11,6 @@ function LoginPage({ showRegister = false }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isRegister, setIsRegister] = useState(showRegister);
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await sendEmailVerification(userCredential.user);
-      alert('Cadastro realizado! Verifique seu e-mail para ativar a conta.');
-      navigate('/');
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
-    }
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -40,17 +21,48 @@ function LoginPage({ showRegister = false }) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
       if (!userCredential.user.emailVerified) {
-        setError('Por favor, verifique seu e-mail antes de entrar.');
+        setError('Verifique seu e-mail antes de fazer login.');
         setLoading(false);
+        await auth.signOut();
         return;
       }
 
+      const user = await Parse.User.logIn(email, password);
+      window.dispatchEvent(new Event('userChange'));
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError(`Falha no login: ${err.message}`);
       setLoading(false);
     }
   };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCredential.user);
+
+      const user = new Parse.User();
+      user.set("username", email);
+      user.set("password", password);
+      user.set("email", email);
+      user.set("isAdmin", false);
+      await user.signUp();
+
+      await auth.signOut();  // desloga do Firebase para não ficar logado antes da verificação
+
+      alert("Cadastro realizado. Verifique seu e-mail para ativar a conta.");
+      setLoading(false);
+      setIsRegister(false); // volta para tela de login
+    } catch (err) {
+      setError(`Falha no cadastro: ${err.message}`);
+      setLoading(false);
+    }
+  };
+
 
   const toggleMode = () => {
     setIsRegister(!isRegister);
@@ -63,7 +75,6 @@ function LoginPage({ showRegister = false }) {
         <h1 className="text-3xl font-playfair font-bold text-wine-900 text-center mb-6">
           {isRegister ? 'Cadastre-se' : 'Login'}
         </h1>
-
         {isRegister ? (
           <form onSubmit={handleRegister} className="space-y-6">
             <div>
@@ -80,7 +91,6 @@ function LoginPage({ showRegister = false }) {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wine-900 focus:ring focus:ring-wine-800 focus:ring-opacity-50"
               />
             </div>
-
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
@@ -95,13 +105,11 @@ function LoginPage({ showRegister = false }) {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wine-900 focus:ring focus:ring-wine-800 focus:ring-opacity-50"
               />
             </div>
-
             {error && (
               <div className="text-red-600 text-sm text-center">
                 {error}
               </div>
             )}
-
             <div>
               <button
                 type="submit"
@@ -111,7 +119,6 @@ function LoginPage({ showRegister = false }) {
                 {loading ? 'Cadastrando...' : 'Cadastrar'}
               </button>
             </div>
-
             <div className="text-center mt-4">
               <button
                 type="button"
@@ -138,7 +145,6 @@ function LoginPage({ showRegister = false }) {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wine-900 focus:ring focus:ring-wine-800 focus:ring-opacity-50"
               />
             </div>
-
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
@@ -153,13 +159,11 @@ function LoginPage({ showRegister = false }) {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wine-900 focus:ring focus:ring-wine-800 focus:ring-opacity-50"
               />
             </div>
-
             {error && (
               <div className="text-red-600 text-sm text-center">
                 {error}
               </div>
             )}
-
             <div>
               <button
                 type="submit"
@@ -169,7 +173,6 @@ function LoginPage({ showRegister = false }) {
                 {loading ? 'Entrando...' : 'Entrar'}
               </button>
             </div>
-
             <div className="text-center mt-4">
               <button
                 type="button"
