@@ -1,32 +1,19 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import Parse from '../config/back4app';
+import { useNavigate } from 'react-router-dom';
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { auth } from '../config/firebase-config'; // ajuste conforme seu projeto
 
 function LoginPage({ showRegister = false }) {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isRegister, setIsRegister] = useState(showRegister);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const user = await Parse.User.logIn(username, password);
-      console.log('Usuário logado com sucesso:', user);
-      window.dispatchEvent(new Event('userChange'));
-      navigate('/');
-    } catch (err) {
-      console.error('Erro ao fazer login:', err);
-      setError(`Falha no login: ${err.message}`);
-      setLoading(false);
-    }
-  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -34,21 +21,33 @@ function LoginPage({ showRegister = false }) {
     setError(null);
 
     try {
-      const user = new Parse.User();
-      user.set("username", username);
-      user.set("password", password);
-      user.set("email", email);
-
-      user.set("isAdmin", false);
-
-      const result = await user.signUp();
-      console.log('Usuário registrado com sucesso:', result);
-      
-      window.dispatchEvent(new Event('userChange'));
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCredential.user);
+      alert('Cadastro realizado! Verifique seu e-mail para ativar a conta.');
       navigate('/');
     } catch (err) {
-      console.error('Erro ao cadastrar:', err);
-      setError(`Falha no cadastro: ${err.message}`);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      if (!userCredential.user.emailVerified) {
+        setError('Por favor, verifique seu e-mail antes de entrar.');
+        setLoading(false);
+        return;
+      }
+
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
       setLoading(false);
     }
   };
@@ -64,25 +63,9 @@ function LoginPage({ showRegister = false }) {
         <h1 className="text-3xl font-playfair font-bold text-wine-900 text-center mb-6">
           {isRegister ? 'Cadastre-se' : 'Login'}
         </h1>
-        
-        {isRegister ? (
 
+        {isRegister ? (
           <form onSubmit={handleRegister} className="space-y-6">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Usuário
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wine-900 focus:ring focus:ring-wine-800 focus:ring-opacity-50"
-              />
-            </div>
-            
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
@@ -97,7 +80,7 @@ function LoginPage({ showRegister = false }) {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wine-900 focus:ring focus:ring-wine-800 focus:ring-opacity-50"
               />
             </div>
-            
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
@@ -128,10 +111,10 @@ function LoginPage({ showRegister = false }) {
                 {loading ? 'Cadastrando...' : 'Cadastrar'}
               </button>
             </div>
-            
+
             <div className="text-center mt-4">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={toggleMode}
                 className="text-wine-900 hover:underline"
               >
@@ -140,22 +123,22 @@ function LoginPage({ showRegister = false }) {
             </div>
           </form>
         ) : (
-
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Usuário
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
               </label>
               <input
-                type="text"
-                id="username"
-                name="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                id="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wine-900 focus:ring focus:ring-wine-800 focus:ring-opacity-50"
               />
             </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
@@ -186,10 +169,10 @@ function LoginPage({ showRegister = false }) {
                 {loading ? 'Entrando...' : 'Entrar'}
               </button>
             </div>
-            
+
             <div className="text-center mt-4">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={toggleMode}
                 className="text-wine-900 hover:underline"
               >
@@ -203,4 +186,4 @@ function LoginPage({ showRegister = false }) {
   );
 }
 
-export default LoginPage; 
+export default LoginPage;
