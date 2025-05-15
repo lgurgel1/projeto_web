@@ -109,5 +109,5 @@ O projeto utiliza as seguintes integrações:
 
 ## 🌐 Links
 
-- Site em produção: https://star-hotel-limoeiro.vercel.app
+- Site em produção: https://projeto-web-he8r.vercel.app/
 - Repositório: [GitHub](https://github.com/lgurgel1/projeto_web)
