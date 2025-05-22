@@ -19,29 +19,64 @@ function ReservasPage() {
   useEffect(() => {
     const usuarioSalvo = Parse.User.current()
     if (usuarioSalvo) {
-      const nome = usuarioSalvo.get('username') || ''
       const email = usuarioSalvo.get('email') || ''
-  
       setFormData((prev) => ({
         ...prev,
-        nome,
         email
       }))
     }
   }, [])
 
+  const formatarTelefone = (value) => {
+    let numero = value.replace(/\D/g, '')
+
+    if (numero.length > 11) {
+      numero = numero.slice(0, 11)
+    }
+    if (numero.length <= 2) {
+      return `(${numero}`
+    }
+    if (numero.length <= 7) {
+      return `(${numero.slice(0,2)}) ${numero.slice(2)}`
+    }
+    if (numero.length <= 11) {
+      return `(${numero.slice(0,2)}) ${numero.slice(2,7)}-${numero.slice(7)}`
+    }
+    return numero
+  }
+
+
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+
+    if (name === 'telefone') {
+      const telefoneFormatado = formatarTelefone(value)
+      setFormData(prev => ({
+        ...prev,
+        telefone: telefoneFormatado
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }))
+    }
   }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     console.log('--- handleSubmit iniciada! ---'); 
     console.log('Tentando submeter reserva com dados:', formData) 
+
+  const camposObrigatorios = ['nome', 'email', 'telefone', 'dataEntrada', 'dataSaida', 'tipoQuarto', 'numeroPessoas'];
+
+  for (const campo of camposObrigatorios) {
+    if (!formData[campo] || formData[campo].toString().trim() === '') {
+      alert(`Por favor, preencha o campo: ${campo}`);
+      return;
+    }
+  }
     
     try {
       console.log('Verificando inicialização do Parse...') 
@@ -59,6 +94,8 @@ function ReservasPage() {
       
       const Reserva = Parse.Object.extend('Reservation') 
       const reserva = new Reserva()
+
+
 
       console.log('Definindo campos da reserva...') 
       reserva.set('nome', formData.nome);
@@ -84,6 +121,7 @@ function ReservasPage() {
       console.error('Erro detalhado ao salvar reserva:', error) 
       alert(`Ocorreu um erro ao processar sua reserva: ${error.message}. Verifique o console para mais detalhes.`)
     }
+  
   }
 
   return (
@@ -98,10 +136,22 @@ function ReservasPage() {
         className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg"
       >
 
-
+        <div className="mt-6">
+          <label className="block text-gray-700 mb-2" htmlFor="nome">
+            Nome para reserva
+          </label>
+          <input
+            type="nome"
+            id="nome"
+            name="nome"
+            value={formData.nome}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-wine-900"
+          />
+        </div>
         <div className="mt-6">
           <label className="block text-gray-700 mb-2" htmlFor="telefone">
-            Telefone
+            Telefone para reserva
           </label>
           <input
             type="tel"
@@ -109,7 +159,6 @@ function ReservasPage() {
             name="telefone"
             value={formData.telefone}
             onChange={handleChange}
-            required
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-wine-900"
           />
         </div>
@@ -125,7 +174,6 @@ function ReservasPage() {
               name="dataEntrada"
               value={formData.dataEntrada}
               onChange={handleChange}
-              required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-wine-900"
             />
           </div>
@@ -140,7 +188,7 @@ function ReservasPage() {
               name="dataSaida"
               value={formData.dataSaida}
               onChange={handleChange}
-              required
+              min={formData.dataEntrada}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-wine-900"
             />
           </div>
@@ -156,7 +204,7 @@ function ReservasPage() {
               name="tipoQuarto"
               value={formData.tipoQuarto}
               onChange={handleChange}
-              required
+              
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-wine-900"
             >
               <option value="">Selecione um quarto</option>
@@ -176,7 +224,6 @@ function ReservasPage() {
               name="numeroPessoas"
               value={formData.numeroPessoas}
               onChange={handleChange}
-              required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-wine-900"
             >
               {[1, 2, 3, 4].map(num => (

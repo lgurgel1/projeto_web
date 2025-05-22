@@ -31,7 +31,7 @@ function LoginPage({ showRegister = false }) {
       window.dispatchEvent(new Event('userChange'));
       navigate('/');
     } catch (err) {
-      setError(`Falha no login: ${err.message}`);
+      setError(`Email/senha invalido`);
       setLoading(false);
     }
   };
