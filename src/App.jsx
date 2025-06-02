@@ -21,7 +21,7 @@ import './index.css'
 function AdminRoute({ children }) {
   const currentUser = Parse.User.current();
   // Verifica se o usuário logado é admin_hotel em vez de checar a propriedade isAdmin
-  const isAdmin = currentUser && currentUser.get('username') === 'admin_hotel';
+  const isAdmin = currentUser && currentUser.get('username') === 'confirmacaostarhotel@gmail.com';
   return isAdmin ? children : <Navigate to="/login" replace />; 
 }
 
