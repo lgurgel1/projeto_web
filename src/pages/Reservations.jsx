@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Parse from '../config/back4app';
 
+window.Parse = Parse;
+
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
   const [formData, setFormData] = useState({
@@ -29,6 +31,7 @@ const Reservations = () => {
     }
   };
 
+
   useEffect(() => {
     loadReservations();
   }, []);
@@ -41,57 +44,64 @@ const Reservations = () => {
     });
   };
 
-  // Cria uma nova reserva
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const Reservation = Parse.Object.extend('Reservation');
-      const reservation = new Reservation();
-      
-      if (editingId) {
-        // Atualiza reserva existente
-        const query = new Parse.Query('Reservation');
-        const reservationToUpdate = await query.get(editingId);
+  e.preventDefault();
+    
+  try {
+    const user = Parse.User.current();
+    const Reservation = Parse.Object.extend('Reservation');
 
-        // Define campos com conversão de data e nomes corretos
-        reservationToUpdate.set('nome', formData.name);
-        reservationToUpdate.set('email', formData.email);
-        reservationToUpdate.set('telefone', formData.telefone);
-        reservationToUpdate.set('dataEntrada', new Date(formData.checkIn));
-        reservationToUpdate.set('dataSaida', new Date(formData.checkOut));
-        reservationToUpdate.set('numeroPessoas', parseInt(formData.guests));
-        reservationToUpdate.set('tipoQuarto', formData.roomType);
-
-        await reservationToUpdate.save();
-      } else {
-        // Cria nova reserva
-        // Define campos com conversão de data e nomes corretos
-        reservation.set('nome', formData.name);
-        reservation.set('email', formData.email);
-        reservation.set('telefone', formData.telefone);
-        reservation.set('dataEntrada', new Date(formData.checkIn));
-        reservation.set('dataSaida', new Date(formData.checkOut));
-        reservation.set('numeroPessoas', parseInt(formData.guests));
-        reservation.set('tipoQuarto', formData.roomType);
-
-        await reservation.save();
+    if (editingId) {
+      if (!user?.get("isAdmin")) {
+        alert("Você não tem permissão para editar reservas.");
+        return;
       }
 
-      setFormData({
-        name: '',
-        email: '',
-        telefone: '',
-        checkIn: '',
-        checkOut: '',
-        guests: 1,
-        roomType: 'standard'
+      await Parse.Cloud.run("updateReservation", {
+        reservationId: editingId,
+        data: {
+          nome: formData.name,
+          email: formData.email,
+          telefone: formData.telefone,
+          dataEntrada: new Date(formData.checkIn),
+          dataSaida: new Date(formData.checkOut),
+          numeroPessoas: parseInt(formData.guests),
+          tipoQuarto: formData.roomType,
+        },
       });
-      setEditingId(null);
-      loadReservations();
-    } catch (error) {
-      console.error('Erro ao salvar reserva:', error);
+
+    } else {
+      const reservation = new Reservation();
+
+      reservation.set('nome', formData.name);
+      reservation.set('email', formData.email);
+      reservation.set('telefone', formData.telefone);
+      reservation.set('dataEntrada', new Date(formData.checkIn));
+      reservation.set('dataSaida', new Date(formData.checkOut));
+      reservation.set('numeroPessoas', parseInt(formData.guests));
+      reservation.set('tipoQuarto', formData.roomType);
+
+      await reservation.save();
     }
-  };
+
+    // ✅ Resetar formulário e estado
+    setFormData({
+      name: '',
+      email: '',
+      telefone: '',
+      checkIn: '',
+      checkOut: '',
+      guests: 1,
+      roomType: 'standard'
+    });
+
+    setEditingId(null);
+    loadReservations();
+
+  } catch (error) {
+    console.error('Erro ao salvar reserva:', error);
+  }
+};
 
   // Edita uma reserva existente
   const handleEdit = (reservation) => {
@@ -109,6 +119,18 @@ const Reservations = () => {
 
   // Deleta uma reserva
   const handleDelete = async (id) => {
+  const user = Parse.User.current();
+  if (!user?.get("isAdmin")) {
+    alert("Você não tem permissão para deletar reservas.");
+    return;
+  }
+
+  try {
+    await Parse.Cloud.run("deleteReservation", { reservationId: id });
+    loadReservations();
+  } catch (error) {
+    console.error("Erro ao deletar reserva:", error);
+  }    
     try {
       const query = new Parse.Query('Reservation');
       const reservation = await query.get(id);
